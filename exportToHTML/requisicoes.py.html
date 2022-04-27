@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>requisicoes.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #d55fde; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #5c6370; font-style: italic;}
+.s3 { color: #89ca78;}
+.s4 { color: #d19a66;}
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+requisicoes.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">wsgiref </span><span class="s0">import </span><span class="s1">headers</span>
+
+<span class="s0">import </span><span class="s1">pd </span><span class="s0">as </span><span class="s1">pd</span>
+<span class="s0">import </span><span class="s1">requests</span>
+<span class="s0">from </span><span class="s1">bs4 </span><span class="s0">import </span><span class="s1">BeautifulSoup</span>
+<span class="s0">from </span><span class="s1">selenium </span><span class="s0">import </span><span class="s1">webdriver</span>
+<span class="s0">from </span><span class="s1">selenium.webdriver.common.by </span><span class="s0">import </span><span class="s1">By</span>
+<span class="s0">from </span><span class="s1">selenium.webdriver.chrome.service </span><span class="s0">import </span><span class="s1">Service</span>
+<span class="s0">from </span><span class="s1">selenium.webdriver.chrome.options </span><span class="s0">import </span><span class="s1">Options</span>
+<span class="s0">from </span><span class="s1">time </span><span class="s0">import </span><span class="s1">sleep</span>
+<span class="s0">import </span><span class="s1">pandas </span><span class="s0">as </span><span class="s1">pd</span>
+
+<span class="s1">options = Options()</span>
+<span class="s2">#options.add_argument('--headless')  # não mostrar o navegador</span>
+<span class="s1">options.add_argument(</span><span class="s3">'window-size=400,800'</span><span class="s1">)</span>
+<span class="s1">options.add_experimental_option(</span><span class="s3">&quot;detach&quot;</span><span class="s1">, </span><span class="s0">True</span><span class="s1">)</span>
+
+<span class="s1">s = Service(</span><span class="s3">'C:/Users/marco/Downloads/chromedriver.exe'</span><span class="s1">)</span>
+<span class="s1">navegador = webdriver.Chrome(service=s, options=options)</span>
+<span class="s1">navegador.get(</span><span class="s3">'https://marcosruizmrf.github.io/front-pgf/'</span><span class="s1">)</span>
+<span class="s1">sleep(</span><span class="s4">2</span><span class="s1">)</span>
+
+<span class="s1">button_stay = navegador.find_element_by_css_selector(</span><span class="s3">'button &gt; span'</span><span class="s1">)</span>
+<span class="s2"># TODO: clicar no segundo botao</span>
+<span class="s2"># nextButton = navegador.find_elements_by_tag_name('button')[-4]</span>
+<span class="s1">button_stay.click()</span>
+
+<span class="s1">sleep(</span><span class="s4">2</span><span class="s1">)</span>
+
+<span class="s1">page_content = navegador.page_source</span>
+<span class="s1">site = BeautifulSoup(page_content, </span><span class="s3">'html.parser'</span><span class="s1">)</span>
+<span class="s1">print(site.prettify())</span>
+<span class="s1">sleep(</span><span class="s4">2</span><span class="s1">)</span>
+<span class="s3">''' 
+noticia = site.findAll(&quot;mat-card-header&quot;) 
+for header in noticia: 
+   header.get('class'), print(header.find('mat-card-title').text[0:20])'''</span>
+<span class="s1">dados_contents = []</span>
+
+<span class="s1">contents = site.findAll(</span><span class="s3">'div'</span><span class="s1">, attrs={</span><span class="s3">'class'</span><span class="s1">: </span><span class="s3">'content'</span><span class="s1">})</span>
+<span class="s0">for </span><span class="s1">content </span><span class="s0">in </span><span class="s1">contents:</span>
+    <span class="s1">title = site.findAll(</span><span class="s3">'mat-card-title'</span><span class="s1">, attrs={</span><span class="s3">'class'</span><span class="s1">: </span><span class="s3">'mat-card-title'</span><span class="s1">})[-</span><span class="s4">1</span><span class="s1">].text</span>
+    <span class="s1">print(</span><span class="s3">'Título:'</span><span class="s1">, title)</span>
+
+    <span class="s1">description = site.findAll(</span><span class="s3">'mat-card-subtitle'</span><span class="s1">, attrs={</span><span class="s3">'class'</span><span class="s1">: </span><span class="s3">'mat-card-subtitle'</span><span class="s1">})[</span><span class="s4">0</span><span class="s1">].text</span>
+    <span class="s1">print(</span><span class="s3">'Descrição:'</span><span class="s1">, description)</span>
+
+    <span class="s1">orderOfService = site.findAll(</span><span class="s3">'mat-card-subtitle'</span><span class="s1">, attrs={</span><span class="s3">'class'</span><span class="s1">: </span><span class="s3">'mat-card-subtitle'</span><span class="s1">})[-</span><span class="s4">1</span><span class="s1">].text</span>
+    <span class="s1">print(</span><span class="s3">'Ordem de serviço:'</span><span class="s1">, orderOfService)</span>
+
+    <span class="s1">print()</span>
+
+    <span class="s1">dados_contents.append([title, description, orderOfService])</span>
+
+
+<span class="s1">dados = pd.DataFrame(dados_contents, columns=[</span><span class="s3">'Titulo'</span><span class="s1">, </span><span class="s3">'Descricao'</span><span class="s1">, </span><span class="s3">'Ordem de Servico'</span><span class="s1">])</span>
+
+<span class="s1">dados.to_csv(</span><span class="s3">'contents2.csv'</span><span class="s1">, index=</span><span class="s0">False</span><span class="s1">, encoding=</span><span class="s3">'utf-8-sig'</span><span class="s1">)</span>
+
+
+
+
+<span class="s3">'''title = [detalhe.text for detalhe in title] 
+print(title)'''</span>
+
+<span class="s3">'''titulo = site.findAll(&quot;mat-card-header&quot;) 
+for header in titulo: 
+   header.get('class'), print(header.find('mat-card-subtitle').text)'''</span>
+
+<span class="s3">'''divoContent = site.findAll(&quot;div&quot;) 
+for content in divoContent: 
+   content.get('class'), print(content.find('mat-card').text)'''</span>
+
+<span class="s3">'''container = site.findAll('div', attrs={'class': 'content'}) 
+container = [detalhe.text for detalhe in container] 
+container.append(container.count(container)) 
+print(container)'''</span>
+
+<span class="s3">''' 
+input_place = navegador.find_element_by_tag_name('input') 
+input_place.send_keys('São Paulo') 
+input_place.submit() 
+'''</span>
+</pre>
+</body>
+</html>
